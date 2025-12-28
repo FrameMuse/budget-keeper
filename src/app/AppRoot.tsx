@@ -4,6 +4,8 @@ import "@/assets/scss/base.scss"
 import { State, StateArray } from "@denshya/reactive"
 import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from "html5-qrcode"
 
+import { Invoice } from "./schema"
+
 
 const qrcodeRegionId = "Html5QrcodeScanner"
 
@@ -29,17 +31,44 @@ function parseTaxUrl(url: string) {
 
 
     return {
-      id: p.iic,
+      iic: p.iic,
       date: p.crtd,
+      tin: Number(p.tin),
       price,
-      tax: price * (TAX_VAT / 100),
-      raw: p,
-      items: [],
-      expanded: false,
+      tax: price * (TAX_VAT / 100)
     }
   } catch {
     return null
   }
+}
+
+function verifyInvoice(iic: string, tin: number, dateTimeCreated: string): Promise<Invoice> {
+  return fetch("https://mapr.tax.gov.me/ic/api/verifyInvoice", {
+    method: "POST",
+    body: JSON.stringify({ iic, tin, dateTimeCreated }),
+    headers: { "Content-Type": "application/json" }
+  }).then(x => x.json())
+}
+
+function saveBill(taxItem) {
+  return fetch("https://budget-keeper-api.framemuse.workers.dev/bills", {
+    method: "POST",
+    body: JSON.stringify(taxItem),
+    headers: { "Content-Type": "application/json" },
+    credentials: "include"
+  })
+}
+
+function saveItems(iic: string, invoice: Invoice) {
+  return fetch("https://budget-keeper-api.framemuse.workers.dev/items", {
+    method: "POST",
+    body: JSON.stringify(invoice.items.map(x => ({
+      iic,
+      ...x
+    }))),
+    headers: { "Content-Type": "application/json" },
+    credentials: "include"
+  })
 }
 
 async function AppRoot() {
@@ -70,29 +99,28 @@ async function AppRoot() {
 
               try {
                 const taxItem = parseTaxUrl(text)
+                console.log(taxItem)
                 if (taxItem == null) {
                   alert("Incorrect Tax Bill: " + text)
                   return
                 }
 
-                if (bills.current.find(x => x.id === taxItem.id)) {
+                if (bills.current.find(x => x.id === taxItem.iic)) {
                   const shouldRemove = confirm("This bill was already added, remove?")
                   if (shouldRemove) {
-                    await fetch("https://budget-keeper-api.framemuse.workers.dev/bills/" + taxItem.id, { method: "DELETE", credentials: "include" })
-                    bills.set(items => items.filter(x => x.id !== taxItem.id))
+                    await fetch("https://budget-keeper-api.framemuse.workers.dev/bills/" + taxItem.iic, { method: "DELETE", credentials: "include" })
+                    bills.set(items => items.filter(x => x.id !== taxItem.iic))
                   }
 
                   return
                 }
 
-                console.log(taxItem)
 
-                await fetch("https://budget-keeper-api.framemuse.workers.dev/bills", {
-                  method: "POST",
-                  body: JSON.stringify(taxItem),
-                  headers: { "Content-Type": "application/json" },
-                  credentials: "include"
-                })
+
+                const invoice = await verifyInvoice(taxItem.iic, taxItem.tin, taxItem.date)
+
+                await saveBill(taxItem)
+                await saveItems(taxItem.iic, invoice)
                 alert("The bill was added: " + taxItem.price)
                 bills.push(taxItem)
               } catch (error) {
