@@ -2,7 +2,7 @@ import "@/assets/scss/reset.scss"
 import "@/assets/scss/base.scss"
 
 import { State, StateArray } from "@denshya/reactive"
-import { Html5QrcodeScanner, Html5QrcodeScanType, Html5QrcodeSupportedFormats } from "html5-qrcode"
+import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from "html5-qrcode"
 
 
 const qrcodeRegionId = "Html5QrcodeScanner"
@@ -49,15 +49,16 @@ function AppRoot() {
         <button on={{
           click: () => {
             const html5QrcodeScanner = new Html5QrcodeScanner(qrcodeRegionId, {
-              supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
               formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
               // videoConstraints: {
               //   aspectRatio: 1,
               // },
-              fps: 30,
+              fps: 60,
               qrbox: (w, h) => ({ width: w * 0.75, height: h * 0.75 })
             }, false)
             html5QrcodeScanner.render(text => {
+              html5QrcodeScanner.pause(true)
+
               const taxItem = parseTaxUrl(text)
               if (taxItem == null) {
                 alert("Incorrect Tax Bill: " + text)
@@ -74,8 +75,6 @@ function AppRoot() {
               }
 
               items.push(taxItem)
-
-              html5QrcodeScanner.pause(true)
             }, undefined)
           }
         }}>Scan</button>
