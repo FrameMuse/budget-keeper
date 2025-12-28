@@ -3,7 +3,7 @@
   "name": "budget-keeper",
   "version": "0.1.0",
   "private": true,
-  "main": "build/index.js",
+  "main": "build/index.html",
   "scripts": {
     "dev": "bunx --bun vite",
     "build": "bunx --bun vite build",
