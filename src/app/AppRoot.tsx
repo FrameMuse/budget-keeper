@@ -42,9 +42,10 @@ function parseTaxUrl(url: string) {
   }
 }
 
-function AppRoot() {
-  const items = new StateArray(JSON.parse(localStorage.getItem("bought-items") ?? "[]"))
-  items.subscribe(value => localStorage.setItem("bought-items", JSON.stringify(value)))
+async function AppRoot() {
+  const bills = new StateArray(await fetch("https://budget-keeper-api.framemuse.workers.dev/bills").then(x => x.json()))
+  // JSON.parse(localStorage.getItem("bought-items") ?? "[]")
+  // items.subscribe(value => localStorage.setItem("bought-items", JSON.stringify(value)))
 
   return (
     <main>
@@ -64,27 +65,41 @@ function AppRoot() {
               fps: 30,
               qrbox: 250,
             }, false)
-            html5QrcodeScanner.render(text => {
+            html5QrcodeScanner.render(async text => {
               html5QrcodeScanner.pause(true)
 
-              const taxItem = parseTaxUrl(text)
-              if (taxItem == null) {
-                alert("Incorrect Tax Bill: " + text)
-                return
-              }
-
-              if (items.current.find(x => x.id === taxItem.id)) {
-                const shouldRemove = confirm("This bill was already added, remove?")
-                if (shouldRemove) {
-                  items.set(items => items.filter(x => x.id !== taxItem.id))
+              try {
+                const taxItem = parseTaxUrl(text)
+                if (taxItem == null) {
+                  alert("Incorrect Tax Bill: " + text)
+                  return
                 }
 
-                return
+                if (bills.current.find(x => x.id === taxItem.id)) {
+                  const shouldRemove = confirm("This bill was already added, remove?")
+                  if (shouldRemove) {
+                    await fetch("https://budget-keeper-api.framemuse.workers.dev/bills/" + taxItem.id, { method: "DELETE" })
+                    bills.set(items => items.filter(x => x.id !== taxItem.id))
+                  }
+
+                  return
+                }
+
+                console.log(taxItem)
+
+                await fetch("https://budget-keeper-api.framemuse.workers.dev/bills", {
+                  method: "POST",
+                  body: JSON.stringify(taxItem),
+                  headers: { "Content-Type": "application/json" }
+                })
+                alert("The bill was added: " + taxItem.price)
+                bills.push(taxItem)
+              } catch (error) {
+                alert("Error happened: " + error)
+              } finally {
+                html5QrcodeScanner.resume()
               }
 
-              console.log(taxItem)
-              alert("The bill was added: " + taxItem.price)
-              items.push(taxItem)
             }, undefined)
           }
         }}>Scan</button>
@@ -98,16 +113,16 @@ function AppRoot() {
           </tr>
         </thead>
         <tbody>
-          {items.map(item => (
+          {bills.map(bill => (
             <tr>
-              <td>{item.id.slice(0, 5)}...</td>
-              <td>{item.price}</td>
-              <td>{item.date.slice(0, 10)}</td>
+              <td>{bill.id.slice(0, 5)}...</td>
+              <td>{bill.price}</td>
+              <td>{bill.date.slice(0, 10)}</td>
             </tr>
           ))}
         </tbody>
         <caption>
-          Total: {State.from(items).to(x => x.reduce<number>((result, next) => result + next.price, 0)).to(x => x.toFixed(2))}
+          Total: {State.from(bills).to(x => x.reduce<number>((result, next) => result + next.price, 0)).to(x => x.toFixed(2))}
         </caption>
       </table>
     </main>
