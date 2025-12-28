@@ -17,6 +17,7 @@ function AppRoot() {
               supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
               formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
               fps: 30,
+              qrbox: 50
             }, false)
             html5QrcodeScanner.render(text => {
               alert(text)
