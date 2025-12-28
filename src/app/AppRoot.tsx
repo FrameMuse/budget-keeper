@@ -96,7 +96,7 @@ async function AppRoot() {
                 alert("The bill was added: " + taxItem.price)
                 bills.push(taxItem)
               } catch (error) {
-                alert("Error happened: " + error)
+                alert(`Error happened: ${error.name}: ${error.message}`)
               } finally {
                 html5QrcodeScanner.resume()
               }
