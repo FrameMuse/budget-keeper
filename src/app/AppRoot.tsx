@@ -21,6 +21,7 @@ function AppRoot() {
             }, false)
             html5QrcodeScanner.render(text => {
               alert(text)
+              html5QrcodeScanner.pause(true)
             }, undefined)
           }
         }}>Scan</button>
