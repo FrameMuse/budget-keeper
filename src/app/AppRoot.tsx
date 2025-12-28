@@ -16,11 +16,15 @@ const TAX_VAT = 21
  */
 function parseTaxUrl(url: string) {
   try {
+    console.log(url)
+
     const u = new URL(url)
     if (u.host !== TAX_GOV_HOST) return null
 
+    console.log(u)
 
-    const p = Object.fromEntries(u.searchParams.entries())
+    const searchParams = new URLSearchParams(url.replace("https://mapr.tax.gov.me/ic/#/verify", ""))
+    const p = Object.fromEntries(searchParams.entries())
     const price = parseFloat((p.prc || "0").replace(",", ".")) || 0
 
 
@@ -74,6 +78,8 @@ function AppRoot() {
                 return
               }
 
+              console.log(taxItem)
+              alert("The bill was added: " + taxItem.price)
               items.push(taxItem)
             }, undefined)
           }
