@@ -119,8 +119,8 @@ async function AppRoot() {
 
                 const invoice = await verifyInvoice(taxItem.iic, taxItem.tin, taxItem.date)
 
-                await saveBill(taxItem)
-                await saveItems(taxItem.iic, invoice)
+                // await saveBill(taxItem)
+                // await saveItems(taxItem.iic, invoice)
                 alert("The bill was added: " + taxItem.price)
                 bills.push(taxItem)
               } catch (error) {
