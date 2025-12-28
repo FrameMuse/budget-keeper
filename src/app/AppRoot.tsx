@@ -51,9 +51,9 @@ function AppRoot() {
             const html5QrcodeScanner = new Html5QrcodeScanner(qrcodeRegionId, {
               supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
               formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
-              videoConstraints: {
-                aspectRatio: 1,
-              },
+              // videoConstraints: {
+              //   aspectRatio: 1,
+              // },
               fps: 30,
               qrbox: (w, h) => ({ width: w * 0.75, height: h * 0.75 })
             }, false)
