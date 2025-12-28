@@ -43,7 +43,7 @@ function parseTaxUrl(url: string) {
 }
 
 async function AppRoot() {
-  const bills = new StateArray(await fetch("https://budget-keeper-api.framemuse.workers.dev/bills").then(x => x.json()))
+  const bills = new StateArray(await fetch("https://budget-keeper-api.framemuse.workers.dev/bills", { credentials: "include" }).then(x => x.json()))
   // JSON.parse(localStorage.getItem("bought-items") ?? "[]")
   // items.subscribe(value => localStorage.setItem("bought-items", JSON.stringify(value)))
 
@@ -78,7 +78,7 @@ async function AppRoot() {
                 if (bills.current.find(x => x.id === taxItem.id)) {
                   const shouldRemove = confirm("This bill was already added, remove?")
                   if (shouldRemove) {
-                    await fetch("https://budget-keeper-api.framemuse.workers.dev/bills/" + taxItem.id, { method: "DELETE" })
+                    await fetch("https://budget-keeper-api.framemuse.workers.dev/bills/" + taxItem.id, { method: "DELETE", credentials: "include" })
                     bills.set(items => items.filter(x => x.id !== taxItem.id))
                   }
 
@@ -90,7 +90,8 @@ async function AppRoot() {
                 await fetch("https://budget-keeper-api.framemuse.workers.dev/bills", {
                   method: "POST",
                   body: JSON.stringify(taxItem),
-                  headers: { "Content-Type": "application/json" }
+                  headers: { "Content-Type": "application/json" },
+                  credentials: "include"
                 })
                 alert("The bill was added: " + taxItem.price)
                 bills.push(taxItem)
