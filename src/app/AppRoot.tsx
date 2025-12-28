@@ -54,11 +54,15 @@ function AppRoot() {
           click: () => {
             const html5QrcodeScanner = new Html5QrcodeScanner(qrcodeRegionId, {
               formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
-              // videoConstraints: {
-              //   aspectRatio: 1,
-              // },
-              fps: 60,
-              qrbox: (w, h) => ({ width: w * 0.75, height: h * 0.75 })
+              disableFlip: false, // Allow front camera flip (useful for mobile)
+              rememberLastUsedCamera: true, // Speeds up switching cameras
+              useBarCodeDetectorIfSupported: true,
+              showTorchButtonIfSupported: true,
+              experimentalFeatures: {
+                useBarCodeDetectorIfSupported: true
+              },
+              fps: 30,
+              qrbox: 250,
             }, false)
             html5QrcodeScanner.render(text => {
               html5QrcodeScanner.pause(true)
@@ -96,14 +100,14 @@ function AppRoot() {
         <tbody>
           {items.map(item => (
             <tr>
-              <td>{item.id}</td>
+              <td>{item.id.slice(0, 5)}...</td>
               <td>{item.price}</td>
               <td>{item.date.slice(0, 10)}</td>
             </tr>
           ))}
         </tbody>
         <caption>
-          Total: {State.from(items).to(x => x.reduce((result, next) => result + next.price, 0))}
+          Total: {State.from(items).to(x => x.reduce<number>((result, next) => result + next.price, 0)).to(x => x.toFixed(2))}
         </caption>
       </table>
     </main>
