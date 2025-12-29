@@ -118,7 +118,7 @@ async function AppRoot() {
         <tbody>
           {bills.map(bill => (
             <tr>
-              <td>{bill.id.slice(0, 5)}...</td>
+              <td>{bill.iic.slice(0, 5)}...</td>
               <td>{bill.price}</td>
               <td>{bill.date.slice(0, 10)}</td>
             </tr>
