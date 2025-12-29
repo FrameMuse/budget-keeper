@@ -84,11 +84,11 @@ async function AppRoot() {
                   return
                 }
 
-                if (bills.current.find(x => x.id === taxItem.iic)) {
+                if (bills.current.find(x => x.iic === taxItem.iic)) {
                   const shouldRemove = confirm("This bill was already added, remove?")
                   if (shouldRemove) {
                     await fetch("https://budget-keeper-api.framemuse.workers.dev/bills/" + taxItem.iic, { method: "DELETE", credentials: "include" })
-                    bills.set(items => items.filter(x => x.id !== taxItem.iic))
+                    bills.set(items => items.filter(x => x.iic !== taxItem.iic))
                   }
 
                   return
