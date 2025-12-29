@@ -1,0 +1,17 @@
+@use "@/assets/scss/bundle" as *;
+
+input {
+  padding: 0.5em 0.75em;
+  background: #ccc;
+  border-radius: 0.25em;
+
+  width: 20em;
+}
+
+button {
+  padding: 0.5em 0.75em;
+  background: rgb(42, 131, 204);
+  border-radius: 0.25em;
+
+  color: white;
+}
