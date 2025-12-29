@@ -116,7 +116,7 @@ async function AppRoot() {
           </tr>
         </thead>
         <tbody>
-          {bills.map(bill => (
+          {new StateArray(State.from(bills).to(x => x.sort((a, b) => a.date.localeCompare(b.date)))).map(bill => (
             <tr>
               <td>{bill.iic.slice(0, 5)}...</td>
               <td>{bill.price}</td>
