@@ -13,9 +13,9 @@ import { calculatePrice } from "./calc"
 
 /* ---------- CATEGORY RULES (expanded) ---------- */
 const CATEGORY_RULES = [
-  { category: "Dairy & Eggs", keywords: ["mlijeko", "milk", "sir", "butter", "maslac", "jogurt", "yogurt", "jaja", "egg", "eggs", "philadelphia", "gouda", "gauda", "urda"] },
-  { category: "Meat & Fish", keywords: ["pile", "pilet", "chicken", "goved", "beef", "govedina", "mljeveno", "mljeven", "minced", "losos", "salmon", "skusa", "tuna", "riba", "prosciutto", "prsut", "salami", "kobas", "sausage", "bacon"] },
-  { category: "Bakery & Bread", keywords: ["coko", "coco", "tortilja", "7 days", "hljeb", "bread", "tost", "toast", "baget", "baguette", "kifla", "roll", "croissant", "kroasan", "pecivo", "pastry", "panini", "bake"] },
+  { category: "Dairy & Eggs", keywords: ["kulen ", "mlijeko", "milk", "sir", "butter", "maslac", "jogurt", "yogurt", "jaja", "egg", "eggs", "philadelphia", "gouda", "gauda", "urda"] },
+  { category: "Meat & Fish", keywords: ["cevapcici", "zlatiborac rinfuz", "zlatiborac slajs", "salama", "pile", "pilet", "chicken", "goved", "beef", "govedina", "mljeveno", "mljeven", "minced", "losos", "salmon", "skusa", "tuna", "riba", "prosciutto", "prsut", "salami", "kobas", "sausage", "bacon"] },
+  { category: "Bakery & Bread", keywords: ["lisnato", "kroas.", "bakin", "coko", "coco", "tortilja", "7 days", "hljeb", "bread", "tost", "toast", "baget", "baguette", "kifla", "roll", "croissant", "kroasan", "pecivo", "pastry", "panini", "bake"] },
   { category: "Prepared & Frozen", keywords: ["smrznut", "frozen", "pizza", "pomfrit", "ready meal", "frozen pizza", "frozen vegetables", "gotov", "grill", "grilovan"] },
   { category: "Produce", keywords: ["grozde", "pomodoro", "meksicki mix", "paradajz", "tomato", "krastavac", "cucumber", "jabuka", "apple", "banana", "orange", "pomorand", "mandarina", "salat", "mjesavina", "lettuce", "spinach", "brokoli", "broccoli", "fruit", "vegetable", "krompir", "sampinjoni"] },
   { category: "Pasta, Rice & Grains", keywords: ["pasta", "fusilli", "tagliatelle", "pappardelle", "riz", "rice", "pirinac", "grain", "flour", "couscous"] },
@@ -24,7 +24,7 @@ const CATEGORY_RULES = [
   { category: "Drinks – Non-Alcoholic", keywords: ["plazmaccino", "voda", "water", "cola", "coca", "sprite", "sok", "juice", "coffee", "kafa", "caffe", "latte", "espresso", "tea", "caj", "frappuccino"] },
   { category: "Drinks – Alcoholic", keywords: ["cider", "somersby", "vino", "wine", "pivo", "beer", "vodka", "rum"] },
   { category: "Household & Cleaning", keywords: ["krpa", "cloth", "napkin", "maramice", "tissue", "paper", "bakingsheet", "baking paper", "detergent", "soap", "cleaner", "bleach"] },
-  { category: "Personal Care & Health", keywords: ["toothbrush", "cetkica", "mask", "maska", "shampoo", "conditioner", "fervex", "strepsils", "medic", "tablet", "ointment", "skincare"] },
+  { category: "Personal Care & Health", keywords: ["ob apollix", "toothbrush", "cetkica", "mask", "maska", "shampoo", "conditioner", "fervex", "strepsils", "medic", "tablet", "ointment", "skincare"] },
   { category: "Kitchen & Tools", keywords: ["papir za pecenje", "presa", "pleh", "tool", "knife", "pan", "pot", "kettle", "filter", "press", "utensil", "grater"] },
   { category: "Electronics & Tech", keywords: ["elektro", "usb", "charger", "battery", "headphone", "earbud", "phone", "cable", "adapter", "mouse", "keyboard"] },
   { category: "Clothing & Accessories", keywords: ["shirt", "socks", "cap", "gloves", "scarf", "hat", "jacket"] },
