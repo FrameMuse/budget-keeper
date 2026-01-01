@@ -223,7 +223,7 @@ async function AppRoot() {
               <td>Subcategory</td>
               <td>Count</td>
               <td>Price</td>
-              <td>Percent of Total</td>
+              <td>% of Total</td>
             </tr>
           </thead>
           <tbody>
