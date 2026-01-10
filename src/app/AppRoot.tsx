@@ -44,13 +44,21 @@ function parseTaxUrl(url: string) {
   }
 }
 
-function saveBill(taxItem) {
+function saveBill(taxItem: any) {
   return fetch("https://budget-keeper-api.framemuse.workers.dev/bills", {
     method: "POST",
     body: JSON.stringify(taxItem),
     headers: { "Content-Type": "application/json" },
     credentials: "include"
   })
+}
+
+function getBills(searchParams: URLSearchParams) {
+  return fetch("https://budget-keeper-api.framemuse.workers.dev/bills?" + searchParams, { credentials: "include" }).then(x => x.json())
+}
+
+function getBillItems(searchParams: URLSearchParams) {
+  return fetch("https://budget-keeper-api.framemuse.workers.dev/items?" + searchParams, { credentials: "include" }).then(x => x.json())
 }
 
 class Pending extends State<boolean> {
@@ -70,10 +78,34 @@ class Pending extends State<boolean> {
 
 
 async function AppRoot() {
-  const bills = new StateArray(await fetch("https://budget-keeper-api.framemuse.workers.dev/bills", { credentials: "include" }).then(x => x.json()))
-  const items = await fetch("https://budget-keeper-api.framemuse.workers.dev/items", { credentials: "include" }).then(x => x.json())
+  const startDate = new State<string | null>(null)
+  const endDate = new State<string | null>(null)
 
-  const analyzedItems = analyzeItems(items)
+  const searchParams = new URLSearchParams
+  startDate.subscribe(startDate => {
+    if (startDate) {
+      searchParams.set("startDate", startDate)
+    } else {
+      searchParams.delete("startDate")
+    }
+  })
+  endDate.subscribe(endDate => {
+    if (endDate) {
+      searchParams.set("endDate", endDate)
+    } else {
+      searchParams.delete("endDate")
+    }
+  })
+
+  const bills = new StateArray(await getBills(searchParams))
+  const items = new State(await getBillItems(searchParams))
+
+  State.collect({ startDate, endDate }).subscribe(async () => {
+    bills.set(await getBills(searchParams))
+    items.set(await getBillItems(searchParams))
+  })
+
+  const analyzedItems = items.to(analyzeItems)
   // console.log(analyzedItems)
 
   // const asd = {}
@@ -94,7 +126,7 @@ async function AppRoot() {
   // JSON.parse(localStorage.getItem("bought-items") ?? "[]")
   // items.subscribe(value => localStorage.setItem("bought-items", JSON.stringify(value)))
 
-  async function onBillAdd(bill) {
+  async function onBillAdd(bill: any) {
     if (bills.current.find(x => x.iic === bill.iic)) {
       const shouldRemove = confirm("DELETE? This bill was already added, ok to DELETE?")
       if (shouldRemove) {
@@ -184,6 +216,11 @@ async function AppRoot() {
         </form>
       </div>
       <div>
+        <input type="date" name="date-start" value={startDate} />
+        {"<--->"}
+        <input type="date" name="date-end" value={endDate} />
+      </div>
+      <div>
         <button on={{ click: () => tab.set("bills") }}>Bills</button>
         <button on={{ click: () => tab.set("categories") }}>Categories</button>
       </div>
@@ -227,7 +264,7 @@ async function AppRoot() {
             </tr>
           </thead>
           <tbody>
-            {analyzedItems.categories.map(category => {
+            {new StateArray(analyzedItems.$.categories).map(category => {
               if (category.category === "Drinks – Non-Alcoholic") {
                 return (
                   <>
@@ -242,15 +279,15 @@ async function AppRoot() {
                       <td></td>
                       <td>Coffee Shop</td>
                       <td></td>
-                      <td>{analyzedItems.coffee.coffeeShop.totalSpent}</td>
-                      <td>{analyzedItems.coffee.coffeeShop.percentOfTotal}%</td>
+                      <td>{analyzedItems.$.coffee.$.coffeeShop.$.totalSpent}</td>
+                      <td>{analyzedItems.$.coffee.$.coffeeShop.$.percentOfTotal}%</td>
                     </tr>
                     <tr style={{ background: "#eaeaea" }}>
                       <td></td>
                       <td>Packaged</td>
                       <td></td>
-                      <td>{analyzedItems.coffee.packaged.totalSpent}</td>
-                      <td>{analyzedItems.coffee.packaged.percentOfTotal}%</td>
+                      <td>{analyzedItems.$.coffee.$.packaged.$.totalSpent}</td>
+                      <td>{analyzedItems.$.coffee.$.packaged.$.percentOfTotal}%</td>
                     </tr>
                   </>
                 )
@@ -266,13 +303,13 @@ async function AppRoot() {
                       <td>{category.totalAmount}</td>
                       <td>{category.percentOfTotal}%</td>
                     </tr>
-                    {analyzedItems.topOther.map(x => (
+                    {new StateArray(analyzedItems.$.topOther).map(x => (
                       <tr style={{ background: "#eaeaea" }}>
                         <td></td>
                         <td>{x.name}</td>
                         <td></td>
                         <td>{x.total}</td>
-                        <td>{round(x.total / analyzedItems.grandTotal * 100, 2)}%</td>
+                        <td>{round(x.total / analyzedItems.$.grandTotal.current * 100, 2)}%</td>
                       </tr>
                     ))}
                   </>
@@ -290,7 +327,7 @@ async function AppRoot() {
               )
             })}
           </tbody>
-          <caption>{analyzedItems.grandTotal}</caption>
+          <caption>{analyzedItems.$.grandTotal}</caption>
         </table>
       </div>
     </main>

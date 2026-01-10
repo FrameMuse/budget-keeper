@@ -91,7 +91,15 @@ export default {
       // GET all items
       if (method === "GET" && pathParts.length === 1) {
         const iic = url.searchParams.get("iic")
-        const response = await env.DB.prepare("SELECT * FROM items WHERE 1=1" + (iic ? " AND iic=" + iic : "") + startDateWhere + endDateWhere).all()
+        const response = await env.DB.prepare(
+          "SELECT items.* " +
+          "FROM items " +
+          "JOIN bills ON bills.iic = items.iic " +
+          "WHERE 1=1" +
+          (iic ? " AND items.iic=" + iic : "") +
+          startDateWhere.replace("date", "bills.date") +
+          endDateWhere.replace("date", "bills.date")
+        ).all()
         headers.set("Content-Type", "application/json")
         return new Response(JSON.stringify(response.results), { headers })
       }
