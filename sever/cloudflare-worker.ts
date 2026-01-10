@@ -1,5 +1,5 @@
 export default {
-  async fetch(request, env) {
+  async fetch(request: Request, env) {
     const origin = request.headers.get("Origin")
 
     // Allow only your frontend (recommended)
@@ -32,6 +32,14 @@ export default {
     }
 
     const url = new URL(request.url)
+    const urlParams = new URLSearchParams(url.search)
+
+    const startDate = urlParams.get("startDate")
+    const endDate = urlParams.get("endDate")
+
+    const startDateWhere = startDate ? ` AND date >= '${startDate}'` : ""
+    const endDateWhere = endDate ? ` AND date <= '${endDate}'` : ""
+
     const method = request.method
     const pathParts = url.pathname.split("/").filter(Boolean) // split path
 
@@ -43,7 +51,7 @@ export default {
     if (pathParts[0] === "bills") {
       // GET all bills
       if (method === "GET" && pathParts.length === 1) {
-        const response = await env.DB.prepare("SELECT * FROM bills").all()
+        const response = await env.DB.prepare("SELECT * FROM bills WHERE 1=1" + startDateWhere + endDateWhere).all()
         headers.set("Content-Type", "application/json")
         return new Response(JSON.stringify(response.results), { headers })
       }
@@ -83,7 +91,7 @@ export default {
       // GET all items
       if (method === "GET" && pathParts.length === 1) {
         const iic = url.searchParams.get("iic")
-        const response = await env.DB.prepare("SELECT * FROM items WHERE 1=1" + (iic ? " AND iic=" + iic : "")).all()
+        const response = await env.DB.prepare("SELECT * FROM items WHERE 1=1" + (iic ? " AND iic=" + iic : "") + startDateWhere + endDateWhere).all()
         headers.set("Content-Type", "application/json")
         return new Response(JSON.stringify(response.results), { headers })
       }
