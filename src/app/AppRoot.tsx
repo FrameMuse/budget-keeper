@@ -3,7 +3,6 @@ import "@/assets/scss/base.scss"
 import "./App.scss"
 
 import { State, StateArray } from "@denshya/reactive"
-import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from "html5-qrcode"
 
 import { analyzeItems } from "./cat"
 import { round } from "lodash-es"
@@ -129,6 +128,7 @@ async function AppRoot() {
   // 2025-11-18T17:18:32 01:00
   // 2025-12-18T20:54:56 01:00
   async function onScan() {
+    const { Html5QrcodeScanner, Html5QrcodeSupportedFormats } = await import("html5-qrcode")
     const html5QrcodeScanner = new Html5QrcodeScanner(qrcodeRegionId, {
       formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
       disableFlip: false, // Allow front camera flip (useful for mobile)

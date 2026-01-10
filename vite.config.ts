@@ -23,7 +23,7 @@ export default defineConfig({
     emitAssets: true,
     assetsInlineLimit: 0,
 
-    minify: false
+    minify: true
   },
   esbuild: {
     keepNames: false,
